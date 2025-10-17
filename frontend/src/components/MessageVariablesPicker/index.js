@@ -59,6 +59,22 @@ const MessageVariablesPicker = ({ onClick, disabled }) => {
         {
             name: i18n.t("messageVariablesPicker.vars.connection"),
             value: "{{connection}} "
+        },
+        {
+            name: "Empresa",
+            value: "{{empresa}}"
+        },
+        {
+            name: "Usuario",
+            value: "{{usuario}}"
+        },
+        {
+            name: "Contraseña",
+            value: "{{contraseña}}"
+        },
+        {
+            name: "Placas",
+            value: "{{placas}}"
         }
     ];
 

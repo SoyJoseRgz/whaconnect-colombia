@@ -15,6 +15,10 @@ interface ContactData {
   email?: string;
   number?: string;
   name?: string;
+  companyName?: string;
+  userName?: string;
+  password?: string;
+  plates?: string;
   acceptAudioMessage?: boolean;
   active?: boolean;
   extraInfo?: ExtraInfo[];
@@ -71,6 +75,10 @@ const UpdateContactService = async ({
     name,
     number,
     extraInfo,
+    companyName,
+    userName,
+    password,
+    plates,
     acceptAudioMessage,
     active,
     disableBot,
@@ -132,6 +140,10 @@ const UpdateContactService = async ({
     name,
     number,
     email,
+    companyName,
+    userName,
+    password,
+    plates,
     acceptAudioMessage,
     active,
     disableBot,

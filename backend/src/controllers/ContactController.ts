@@ -76,6 +76,10 @@ interface ContactData {
   name: string;
   number: string;
   email?: string;
+  companyName?: string;
+  userName?: string;
+  password?: string;
+  plates?: string;
   extraInfo?: ExtraInfo[];
   disableBot?: boolean;
   remoteJid?: string;
@@ -256,12 +260,18 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   const newContact: ContactData = req.body;
   newContact.number = newContact.number.replace("-", "").replace(" ", "");
 
+  console.log("Datos del nuevo contacto recibidos:", newContact); // Log para ver los datos
+
   const schema = Yup.object().shape({
     name: Yup.string().required(),
     number: Yup.string()
       .required()
       .matches(/^\d+$/, "Invalid number format. Only numbers are allowed."),
     email: Yup.string().email("Invalid email"),
+    companyName: Yup.string(),
+    userName: Yup.string(),
+    password: Yup.string(),
+    plates: Yup.string(),
     birthDate: Yup.date()
       .nullable()
       .max(new Date(), "Data de nascimento não pode ser no futuro"),
@@ -279,15 +289,10 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     throw new AppError(err.message);
   }
 
-  if (!newContact.isGroup) {
-    const validNumber = await CheckContactNumber(newContact.number, companyId);
-    const number = validNumber.jid.replace(/\D/g, "");
-    newContact.number = number;
-  }
-
   const validNumber: any = await CheckContactNumber(
     newContact.number,
-    companyId
+    companyId,
+    newContact.isGroup
   );
 
   const contact = await CreateContactService({
@@ -318,6 +323,10 @@ export const update = async (
     name: Yup.string(),
     number: Yup.string().matches(/^\d+(@lid)?$/, "ERR_CHECK_NUMBER"),
     email: Yup.string().email("Invalid email"),
+    companyName: Yup.string(),
+    userName: Yup.string(),
+    password: Yup.string(),
+    plates: Yup.string(),
     birthDate: Yup.date()
       .nullable()
       .max(new Date(), "Data de nascimento não pode ser no futuro"),

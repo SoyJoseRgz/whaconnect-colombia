@@ -20,6 +20,10 @@ interface Request {
   name: string;
   number: string;
   email?: string;
+  companyName?: string;
+  userName?: string;
+  password?: string;
+  plates?: string;
   profilePicUrl?: string;
   acceptAudioMessage?: boolean;
   active?: boolean;
@@ -34,6 +38,10 @@ const CreateContactService = async ({
   name,
   number,
   email = "",
+  companyName = "",
+  userName = "",
+  password = "",
+  plates = "",
   birthDate, // 🎂 INCLUIR NO DESTRUCTURING
   acceptAudioMessage,
   active,
@@ -84,6 +92,10 @@ const CreateContactService = async ({
       name,
       number,
       email,
+      companyName,
+      userName,
+      password,
+      plates,
       birthDate: processedBirthDate, // 🎂 INCLUIR NO CREATE
       acceptAudioMessage: acceptAudioMessageContact,
       active,

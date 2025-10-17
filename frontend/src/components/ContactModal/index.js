@@ -86,6 +86,10 @@ const ContactSchema = Yup.object().shape({
 		.required("Required"),
 	number: Yup.string().min(8, "Too Short!").max(50, "Too Long!"),
 	email: Yup.string().email("Invalid email"),
+	companyName: Yup.string(),
+	userName: Yup.string(),
+	password: Yup.string(),
+	plates: Yup.string(),
 });
 
 const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
@@ -96,6 +100,10 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 		name: "",
 		number: "",
 		email: "",
+		companyName: "",
+		userName: "",
+		password: "",
+		plates: "",
 		disableBot: false,
 		lgpdAcceptedAt: "",
 		birthDate: ""
@@ -104,7 +112,7 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 	const [contact, setContact] = useState(initialState);
 	const [disableBot, setDisableBot] = useState(false);
 	const [selectedUser, setSelectedUser] = useState(null);
-	const [selectedQueue, setSelectedQueue] = useState(null);
+	const [selectedQueue, setSelectedQueue] = useState('');
 	const [queues, setQueues] = useState([]);
 	const [allQueues, setAllQueues] = useState([]);
 	const [options, setOptions] = useState([]);
@@ -161,11 +169,17 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 
 			try {
 				const { data } = await api.get(`/contacts/${contactId}`);
+				console.log("Contacto cargado:", data);
 				if (isMounted.current) {
-					setContact({
+					const contactData = {
 						...data,
+						companyName: data.companyName || "",
+						userName: data.userName || "",
+						password: data.password || "",
+						plates: data.plates || "",
 						birthDate: formatDateForInput(data.birthDate)
-				});
+					};
+					setContact(contactData);
 					setDisableBot(data.disableBot)
 
 					// Preenche automaticamente os campos de Wallet e Queue
@@ -184,7 +198,7 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 					} else {
 						// Limpa os valores quando não há contactWallets
 						setSelectedUser(null);
-						setSelectedQueue(null);
+						setSelectedQueue('');
 						setQueues([]);
 					}
 				}
@@ -200,11 +214,12 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 		onClose();
 		setContact(initialState);
 		setSelectedUser(null);
-		setSelectedQueue(null);
+		setSelectedQueue('');
 		setQueues([]);
 	};
 
 	const handleSaveContact = async values => {
+		console.log("Valores a guardar:", values);
 		try {
 		  // Preparar os dados com a data corretamente formatada
 		  const contactData = {
@@ -215,12 +230,12 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 	  
 		  if (contactId) {
 			if (!selectedUser && !selectedQueue) {
-			  delete contact.contactWallets;
+			  delete contactData.contactWallets;
 			  await api.delete(`/contacts/wallet/${contactId}`);
 			}
 	  
 			const { contactWallets, ...valuesWithoutWallets } = contactData;
-			delete contact.contactWallets;
+			delete contactData.contactWallets;
 	  
 			await api.put(`/contacts/${contactId}`, contactData);
 	  
@@ -321,20 +336,61 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 									/>
 								</div>
 								<div>
-  <Field
-    as={TextField}
-    label={i18n.t("contactModal.form.birthDate")}
-    name="birthDate"
-    type="date"
-    InputLabelProps={{
-      shrink: true,
-    }}
-    fullWidth
-    margin="dense"
-    variant="outlined"
-    helperText={i18n.t("contactModal.form.birthDateHelper")}
-  />
-</div>
+									<Field
+										as={TextField}
+										label={i18n.t("contactModal.form.company")}
+										name="companyName"
+										fullWidth
+										margin="dense"
+										variant="outlined"
+									/>
+								</div>
+								<div>
+									<Field
+										as={TextField}
+										label={i18n.t("contactModal.form.user")}
+										name="userName"
+										fullWidth
+										margin="dense"
+										variant="outlined"
+									/>
+								</div>
+								<div>
+									<Field
+										as={TextField}
+										label={i18n.t("contactModal.form.password")}
+										name="password"
+										type="text"
+										fullWidth
+										margin="dense"
+										variant="outlined"
+									/>
+								</div>
+								<div>
+									<Field
+										as={TextField}
+										label={i18n.t("contactModal.form.plates")}
+										name="plates"
+										fullWidth
+										margin="dense"
+										variant="outlined"
+									/>
+								</div>
+								<div>
+									<Field
+										as={TextField}
+										label={i18n.t("contactModal.form.birthDate")}
+										name="birthDate"
+										type="date"
+										InputLabelProps={{
+											shrink: true,
+										}}
+										fullWidth
+										margin="dense"
+										variant="outlined"
+										helperText={i18n.t("contactModal.form.birthDateHelper")}
+									/>
+								</div>
 
 								<div>
 									<TagsContainer contact={contact} className={classes.textField} />
@@ -368,7 +424,7 @@ const ContactModal = ({ open, onClose, contactId, initialValues, onSave }) => {
 													setQueues(newValue.queues);
 												} else {
 													setQueues(allQueues);
-													setSelectedQueue(null);
+													setSelectedQueue('');
 													setSelectedUser(null);
 												}
 											}}

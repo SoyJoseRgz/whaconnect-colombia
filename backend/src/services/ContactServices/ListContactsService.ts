@@ -44,18 +44,17 @@ const buildWhereCondition = async ({
   let whereCondition: Filterable["where"] = { companyId };
 
   if (searchParam) {
-    const sanitizedSearchParam = removeAccents(searchParam.toLocaleLowerCase().trim());
+    const sanitizedSearchParam = removeAccents(
+      searchParam.toLocaleLowerCase().trim()
+    );
     whereCondition = {
       ...whereCondition,
       [Op.or]: [
-        {
-          name: where(
-            fn("LOWER", fn("unaccent", col("Contact.name"))),
-            "LIKE",
-            `%${sanitizedSearchParam}%`
-          )
-        },
-        { number: { [Op.like]: `%${sanitizedSearchParam}%` } }
+        { name: where(fn("LOWER", fn('unaccent', col("Contact.name"))), "LIKE", `%${sanitizedSearchParam}%`) },
+        { number: { [Op.like]: `%${sanitizedSearchParam}%` } },
+        { email: where(fn("LOWER", fn('unaccent', col("Contact.email"))), "LIKE", `%${sanitizedSearchParam}%`) },
+        { companyName: where(fn("LOWER", fn('unaccent', col("Contact.companyName"))), "LIKE", `%${sanitizedSearchParam}%`) },
+        { plates: where(fn("LOWER", fn('unaccent', col("Contact.plates"))), "LIKE", `%${sanitizedSearchParam}%`) }
       ]
     };
   }
@@ -127,6 +126,8 @@ const ListContactsService = async ({
       "name",
       "number",
       "email",
+      "companyName",
+      "plates",
       "birthDate",
       "isGroup",
       "urlPicture",

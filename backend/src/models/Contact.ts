@@ -49,6 +49,18 @@ class Contact extends Model<Contact> {
   @Column
   email: string;
 
+  @Column
+  companyName: string;
+
+  @Column
+  userName: string;
+
+  @Column
+  password: string;
+
+  @Column
+  plates: string;
+
   @Default("")
   @Column
   profilePicUrl: string;
